@@ -1,7 +1,9 @@
-import { SaveData } from "./moralis.ts";  //TODO:Verify
-const { Client, GatewayIntentBits } = require('discord.js');
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+import { SaveData } from './moralis.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
-require('dotenv').config();
 
 // Getting "numberOfMsgs" messages from the channel "channelID"
 function getMessages(channelID, numberOfMsgs) {
@@ -9,6 +11,7 @@ function getMessages(channelID, numberOfMsgs) {
     const reciever = client.channels.cache.get(channelID);
     const sender = client.channels.cache.get("1005800383337218091");
     reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
+        // console.log(process.env.TOKEN);
         console.log(`Received ${messages.size} messages`);
         messages.forEach(message => {
 
@@ -30,7 +33,6 @@ function getMessages(channelID, numberOfMsgs) {
                 console.log(links);
                 message.content = `Hi, my name is ${nameOfDeveloper} and I am a developer.\nI know ${languages.length} languages namely ${languages.join(', ')}.\nHere are my links: ${links.join('\n')}`;
 
-                // TODO:Verify
                 SaveData(nameOfDeveloper, languages, links);
                 
             }catch(err) {
@@ -62,3 +64,7 @@ client.on("messageCreate", async(msg) => {
 
 // Starting the bot
 client.login(process.env.TOKEN);
+
+
+
+

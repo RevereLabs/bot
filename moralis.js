@@ -1,10 +1,13 @@
 /* import moralis */
-const Moralis = require("moralis-v1/node");
-
+import Moralis from "moralis-v1/node.js";
+import * as dotenv from 'dotenv';
+dotenv.config();
 /* Moralis init code */
-const serverUrl = "YOUR-SERVER-URL";
-const appId = "YOUR-APP-ID";
-const masterKey = "YOUR-MASTER-KEY";
+const serverUrl = process.env.SERVERURL;
+const appId = process.env.APPID;
+const masterKey = process.env.MASTERKEY;
+
+console.log(serverUrl + " " + appId + " " + masterKey);
 
 export const SaveData = async (nameOfDeveloper, languages, links) => {
   await Moralis.start({ serverUrl, appId, masterKey });
@@ -20,3 +23,8 @@ export const SaveData = async (nameOfDeveloper, languages, links) => {
 };
 
 
+try {
+  SaveData("Hello", ["JavaScript", "Python"], ["https://docs.moralis.io/moralis-dapp/database/objects"]);
+} catch (e) {
+  console.log(e);
+}

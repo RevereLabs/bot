@@ -1,0 +1,14 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:RevereLabs/bot.git",
+  "author": "Naman Kaushik <kaushiknaman.dk@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.1.2",
+    "dotenv": "^16.0.1",
+    "moralis-v1": "^1.11.0"
+  }
+}
