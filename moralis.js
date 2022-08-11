@@ -9,13 +9,14 @@ const masterKey = process.env.MASTERKEY;
 
 console.log(serverUrl + " " + appId + " " + masterKey);
 
-export const SaveData = async (nameOfDeveloper, languages, links) => {
+export const SaveData = async (nameOfDeveloper, emailOfDeveloper, languages, links) => {
   await Moralis.start({ serverUrl, appId, masterKey });
 
   const Developer = Moralis.Object.extend("Developer");
   const newDeveloper = new Developer();
 
   newDeveloper.set("name", nameOfDeveloper);
+  newDeveloper.set("email", emailOfDeveloper);
   newDeveloper.set("Languages", languages);
   newDeveloper.set("Links", links);
 
