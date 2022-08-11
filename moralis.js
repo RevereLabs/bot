@@ -21,10 +21,3 @@ export const SaveData = async (nameOfDeveloper, languages, links) => {
 
   await newDeveloper.save();
 };
-
-
-try {
-  SaveData("Hello", ["JavaScript", "Python"], ["https://docs.moralis.io/moralis-dapp/database/objects"]);
-} catch (e) {
-  console.log(e);
-}
