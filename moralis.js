@@ -22,3 +22,18 @@ export const SaveData = async (nameOfDeveloper, emailOfDeveloper, languages, lin
 
   await newDeveloper.save();
 };
+
+// TODO: Apply this function
+
+export const CheckIfExists = async (emailOfDeveloper) => {
+  await Moralis.start({ serverUrl, appId, masterKey });
+  const Developer = Moralis.Object.extend("Developer");
+  const query = new Moralis.Query(Developer);
+  query.equalTo("email", emailOfDeveloper);
+  const results = await query.find();
+  console.log("Retrieved " + results.length + " IDs.");
+  console.log(results.length == 0);
+  results.length == 0;
+};
+  
+
