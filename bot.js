@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-import { SaveData, CheckIfExists } from './moralis.js';
+import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
@@ -9,7 +9,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 function getMessages(channelID, numberOfMsgs, channelName) {
 
     const reciever = client.channels.cache.get(channelID);
-    const sender = client.channels.cache.get("1005800383337218091");
+    const sender = client.channels.cache.get("1008046869030654032");
     if (channelName === 'intro') {
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
             console.log(`Received ${messages.size} messages`);
@@ -34,8 +34,9 @@ function getMessages(channelID, numberOfMsgs, channelName) {
                     console.log(emailOfDeveloper);
                     console.log(languages);
                     console.log(links);
-                    message.content = `Hi, my name is ${nameOfDeveloper} and I am a developer.\nI know ${languages.length} languages namely ${languages.join(', ')}.\nHere are my links: ${links.join('\n')}`;
-                    // TODO: Handle multiple same entries case and if bot gets inactive
+
+                    /*message.content = `Hi, my name is ${nameOfDeveloper} and I am a developer.\nI know ${languages.length} languages namely ${languages.join(', ')}.\nHere are my links: ${links.join('\n')}`;*/
+                    
                     const newUser = CheckIfExists(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
                 
                 
@@ -44,12 +45,14 @@ function getMessages(channelID, numberOfMsgs, channelName) {
                     message.content = "Invalid JSON";
                     reciever.send(message);
                 }
-                sender.send(message);
+                /* sender.send(message);*/
+                message.content = "Please check your email inbox";
+                reciever.send(message);
             
             })
 
         });
-    } else if (channelName === 'listing') {
+    } else if (channelName === 'listings') {
 
 
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
@@ -75,13 +78,15 @@ function getMessages(channelID, numberOfMsgs, channelName) {
                     console.log(description);
                     console.log(stipend);
                     console.log(time);
+                    
                 
                 } catch (err) {
                     console.log(err);
                     message.content = "Invalid JSON";
                     reciever.send(message);
                 }
-            
+                sender.send(message);
+
             })
 
         });
@@ -90,9 +95,65 @@ function getMessages(channelID, numberOfMsgs, channelName) {
 
 }
 
+
+// Getting "numberOfMsgs" messages from the channel "channelID"
+function checkIntroQueue(introChannels, numberOfMsgs) {
+    for (var i = 0; i < introChannels.length; i++) {
+        const reciever = client.channels.cache.get(introChannels[i]);
+    
+        // const sender = client.channels.cache.get("1008046869030654032");
+        reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
+            console.log(`Received ${messages.size} messages`);
+            messages.forEach(message => {
+                
+                // Parsing JSON
+                var recievedData = message.content;
+                try {
+                    
+                    var object = JSON.parse(recievedData);
+                    
+                    // Getting attributes
+                    const nameOfDeveloper = object.name;
+                    const emailOfDeveloper = object.email;
+                    const languages = object.Languages;
+                    const links = object.Links;
+                    const associations = [];
+                    associations.push(message.guild.name);
+                    // Logging for debugging
+                    console.log(message.content);
+                    console.log(nameOfDeveloper);
+                    console.log(emailOfDeveloper);
+                    console.log(languages);
+                    console.log(links);
+                    
+                    const newUser = CheckIfExistsQ(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
+                    
+                    
+                } catch (err) {
+                    console.log(err);
+                    message.content = "Invalid JSON";
+                    
+                }    
+            })
+            
+        });
+    }
+            
+    
+
+}
+
+
+
+
+
 // Function triggered when the bot becomes active
 client.on('ready', () => {
     console.log(client.user.tag);
+    var introChannels = ["1008046792501366895", "1008046743822286858", "1008046685580181574"];
+    // var listingChannels = [];
+    checkIntroQueue(introChannels, 30);
+    // checkListingQueue(listingChannels, 30);
 });
 
 
@@ -103,7 +164,7 @@ client.on("messageCreate", async(msg) => {
 
     var channelName = msg.channel.name;
 
-    if (channelName === 'intro' || channelName === 'listing') {
+    if (channelName === 'intro' || channelName === 'listings') {
         // Method to fetch 1 message and send to our server/channel
         getMessages(msg.channel.id, 1, channelName);    
     }

@@ -3,6 +3,7 @@ dotenv.config();
 import { CourierClient } from "@trycourier/courier";
 const courier = CourierClient({ authorizationToken: process.env.COURIERJS });
 export function sendWelcomeEmail(nameOfDeveloper, emailOfDeveloper) {
+    console.log("reached in emails");
     courier.send({
         message: {
             to: {

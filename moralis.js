@@ -41,8 +41,32 @@ export const CheckIfExists = async (nameOfDeveloper, emailOfDeveloper, languages
     console.log("User already exists");
     var dev = results[0];
     var associations = dev.get("associations");
+    if (associations.includes(association)) {
+      console.log("User already associated with this organisation");
+    } else { 
+      associations.push(association[0]);
+      dev.set("associations", associations);
+      await dev.save();
+    }
     console.log(associations);
     sendRepeatEmail(nameOfDeveloper, emailOfDeveloper, associations);
+  }
+};
+
+
+export const CheckIfExistsQ = async (nameOfDeveloper, emailOfDeveloper, languages, links, association) => {
+  await Moralis.start({ serverUrl, appId, masterKey });
+  const Developer = Moralis.Object.extend("Developer");
+  const query = new Moralis.Query(Developer);
+  query.equalTo("email", emailOfDeveloper);
+  const results = await query.find();
+  console.log("Retrieved " + results.length + " IDs.");
+  console.log(results.length == 0);
+  if (results.length == 0) {
+    SaveData(nameOfDeveloper, emailOfDeveloper, languages, links, association);
+    sendWelcomeEmail(nameOfDeveloper, emailOfDeveloper);
+  } else {
+    console.log("User already exists");
   }
 };
   
