@@ -1,7 +1,7 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-// TODO: import the clouud functions
-import { createUser, createOrUpdateUser, getUser } from '../functions/utils.js';
+// import * as dotenv from 'dotenv';
+// dotenv.config();
+
+import { createUser, createOrUpdateUser, getUser, createGig } from '../functions/utils.js';
 import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
 import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 import { Client, GatewayIntentBits } from 'discord.js';
@@ -40,10 +40,9 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     
                     // Cloud function calls
                     const preExisting = await getUser(emailOfDeveloper);
-                    console.log("reached 1", preExisting.get("email"), emailOfDeveloper);
+                   
                     if (preExisting === null) {
                         createUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
-                        console.log("reached 2");
                     } else {
                         if (nameOfDeveloper === undefined) { 
                             nameOfDeveloper = null;
@@ -62,7 +61,6 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                         }
                         createOrUpdateUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
                     }
-                    // const newUser = CheckIfExists(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
                 
                 
                 } catch (err) {
@@ -72,7 +70,7 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     return;
                 }
                
-                message.content = "<@" + message.author.id + ">"+"Please check your email inbox";
+                message.content = "<@" + message.author.id + ">"+" You will recieve an email if you have been successfully registered!";
                 reciever.send(message);
             
             })
@@ -95,16 +93,16 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     // Getting attributes
                     const title = object.title;
                     const description = object.description;
-                    const stipend = object.stipend;
+                    const bounty = object.bounty;
                     const time = object.time;
 
                     // Logging for debugging
                     console.log(message.content);
                     console.log(title);
                     console.log(description);
-                    console.log(stipend);
+                    console.log(bounty);
                     console.log(time);
-                    
+                    createGig(title, description, bounty, time);
                 
                 } catch (err) {
                     console.log(err);
