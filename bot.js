@@ -95,14 +95,16 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     const description = object.description;
                     const bounty = object.bounty;
                     const time = object.time;
-
+                    const issuedBy = message.guild.name;
                     // Logging for debugging
                     console.log(message.content);
                     console.log(title);
                     console.log(description);
                     console.log(bounty);
                     console.log(time);
-                    createGig(title, description, bounty, time);
+                    var gigMessage = "Title - " + title + "\nDescription - " + description + "\nBounty - " + bounty + "\nTime - " + time + "\nIssued By - " + issuedBy;
+                    message.content = gigMessage;
+                    createGig(title, description, bounty, time, issuedBy);
                 
                 } catch (err) {
                     console.log(err);
