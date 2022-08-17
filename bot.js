@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
+// TODO: import the clouud functions
+import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
 import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
-
 
 // Getting "numberOfMsgs" messages from the channel "channelID"
 function getMessages(channelID, numberOfMsgs, channelName) {
@@ -35,18 +36,40 @@ function getMessages(channelID, numberOfMsgs, channelName) {
                     console.log(languages);
                     console.log(links);
 
-                    /*message.content = `Hi, my name is ${nameOfDeveloper} and I am a developer.\nI know ${languages.length} languages namely ${languages.join(', ')}.\nHere are my links: ${links.join('\n')}`;*/
                     
-                    const newUser = CheckIfExists(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
+                    // Cloud function calls
+                    const preExisting = getUser(emailOfDeveloper);
+                    if (preExisting === null) {
+                        createUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                    } else {
+                        if (nameOfDeveloper === undefined) { 
+                            nameOfDeveloper = null;
+                        }
+                        if (emailOfDeveloper === undefined) { 
+                            emailOfDeveloper = null;
+                        }
+                        if (languages === undefined) { 
+                            languages = null;
+                        }
+                        if (links === undefined) { 
+                            links = null;
+                        }
+                        if (associations.length === 0) { 
+                            associations = null;
+                        }
+                        createOrUpdateUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                    }
+                    // const newUser = CheckIfExists(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
                 
                 
                 } catch (err) {
                     console.log(err);
                     message.content = "Invalid JSON";
                     reciever.send(message);
+                    return;
                 }
-                /* sender.send(message);*/
-                message.content = "Please check your email inbox";
+               
+                message.content = "<@" + message.author.id + ">"+"Please check your email inbox";
                 reciever.send(message);
             
             })
@@ -144,19 +167,14 @@ function checkIntroQueue(introChannels, numberOfMsgs) {
 }
 
 
-
-
-
 // Function triggered when the bot becomes active
 client.on('ready', () => {
     console.log(client.user.tag);
     var introChannels = ["1008046792501366895", "1008046743822286858", "1008046685580181574"];
-    // var listingChannels = [];
     checkIntroQueue(introChannels, 30);
+    // var listingChannels = [];
     // checkListingQueue(listingChannels, 30);
 });
-
-
 
 // Function triggered when bot recieves any message
 client.on("messageCreate", async(msg) => {
