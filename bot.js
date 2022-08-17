@@ -1,20 +1,21 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 // TODO: import the clouud functions
+import { createUser, createOrUpdateUser, getUser } from '../functions/utils.js';
 import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
 import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 // Getting "numberOfMsgs" messages from the channel "channelID"
-function getMessages(channelID, numberOfMsgs, channelName) {
+async function getMessages(channelID, numberOfMsgs, channelName) {
 
     const reciever = client.channels.cache.get(channelID);
     const sender = client.channels.cache.get("1008046869030654032");
     if (channelName === 'intro') {
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
             console.log(`Received ${messages.size} messages`);
-            messages.forEach(message => {
+            messages.forEach(async (message) => {
 
                 // Parsing JSON
                 var recievedData = message.content;
@@ -38,9 +39,11 @@ function getMessages(channelID, numberOfMsgs, channelName) {
 
                     
                     // Cloud function calls
-                    const preExisting = getUser(emailOfDeveloper);
+                    const preExisting = await getUser(emailOfDeveloper);
+                    console.log("reached 1", preExisting.get("email"), emailOfDeveloper);
                     if (preExisting === null) {
                         createUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                        console.log("reached 2");
                     } else {
                         if (nameOfDeveloper === undefined) { 
                             nameOfDeveloper = null;
@@ -171,7 +174,7 @@ function checkIntroQueue(introChannels, numberOfMsgs) {
 client.on('ready', () => {
     console.log(client.user.tag);
     var introChannels = ["1008046792501366895", "1008046743822286858", "1008046685580181574"];
-    checkIntroQueue(introChannels, 30);
+    // checkIntroQueue(introChannels, 30);
     // var listingChannels = [];
     // checkListingQueue(listingChannels, 30);
 });
