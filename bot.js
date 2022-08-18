@@ -2,8 +2,8 @@
 // dotenv.config();
 
 import { createUser, createOrUpdateUser, getUser, createGig } from '../functions/utils.js';
-import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
-import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
+// import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
+// import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
