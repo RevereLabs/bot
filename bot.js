@@ -1,9 +1,9 @@
-// import * as dotenv from 'dotenv';
-// dotenv.config();
-
-import { createUser, createOrUpdateUser, getUser, createGig } from '../functions/utils.js';
-// import { sendWelcomeEmail, sendRepeatEmail } from './courier.js';
+import * as dotenv from 'dotenv';
+dotenv.config();
 // import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
+
+import { sendWelcomeEmail, sendRepeatEmail } from '../functions/email.js';
+import { createUser, createOrUpdateUser, getUser, createGig } from '../functions/utils.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
@@ -40,9 +40,11 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     
                     // Cloud function calls
                     const preExisting = await getUser(emailOfDeveloper);
-                   
+                   console.log(preExisting+" preexisting");
                     if (preExisting === null) {
+                        console.log("AfdasfAS");
                         createUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                        sendWelcomeEmail(nameOfDeveloper, emailOfDeveloper);
                     } else {
                         if (nameOfDeveloper === undefined) { 
                             nameOfDeveloper = null;
@@ -59,7 +61,10 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                         if (associations.length === 0) { 
                             associations = null;
                         }
-                        createOrUpdateUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                        await createOrUpdateUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
+                        var user = await getUser(emailOfDeveloper);
+                        var allAssociations = user.get("associations");
+                        sendRepeatEmail(nameOfDeveloper, emailOfDeveloper, allAssociations);
                     }
                 
                 
