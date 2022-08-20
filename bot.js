@@ -3,7 +3,8 @@ dotenv.config();
 // import { SaveData, CheckIfExists, CheckIfExistsQ } from './moralis.js';
 
 import { sendWelcomeEmail, sendRepeatEmail } from '../functions/email.js';
-import { createUser, createOrUpdateUser, getUser, createGig } from '../functions/utils.js';
+import { createUser, createOrUpdateUser, getUser, } from '../functions/utils.js';
+import { createGig } from '../functions/gig.js';
 import { Client, GatewayIntentBits } from 'discord.js';
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
@@ -20,9 +21,9 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                 // Parsing JSON
                 var recievedData = message.content;
                 try {
-                
+
                     var object = JSON.parse(recievedData);
-                
+
                     // Getting attributes
                     const nameOfDeveloper = object.name;
                     const emailOfDeveloper = object.email;
@@ -37,7 +38,7 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     console.log(languages);
                     console.log(links);
 
-                    
+
                     // Cloud function calls
                     const preExisting = await getUser(emailOfDeveloper);
                    console.log(preExisting+" preexisting");
@@ -46,19 +47,19 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                         createUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
                         sendWelcomeEmail(nameOfDeveloper, emailOfDeveloper);
                     } else {
-                        if (nameOfDeveloper === undefined) { 
+                        if (nameOfDeveloper === undefined) {
                             nameOfDeveloper = null;
                         }
-                        if (emailOfDeveloper === undefined) { 
+                        if (emailOfDeveloper === undefined) {
                             emailOfDeveloper = null;
                         }
-                        if (languages === undefined) { 
+                        if (languages === undefined) {
                             languages = null;
                         }
-                        if (links === undefined) { 
+                        if (links === undefined) {
                             links = null;
                         }
-                        if (associations.length === 0) { 
+                        if (associations.length === 0) {
                             associations = null;
                         }
                         await createOrUpdateUser(emailOfDeveloper, nameOfDeveloper, languages, links, associations);
@@ -66,18 +67,18 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                         var allAssociations = user.get("associations");
                         sendRepeatEmail(nameOfDeveloper, emailOfDeveloper, allAssociations);
                     }
-                
-                
+
+
                 } catch (err) {
                     console.log(err);
                     message.content = "Invalid JSON";
                     reciever.send(message);
                     return;
                 }
-               
+
                 message.content = "<@" + message.author.id + ">"+" You will recieve an email if you have been successfully registered!";
                 reciever.send(message);
-            
+
             })
 
         });
@@ -85,16 +86,16 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
 
 
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
- 
+
             console.log(`Received ${messages.size} messages`);
             messages.forEach(message => {
 
                 // Parsing JSON
                 var recievedData = message.content;
                 try {
-                
+
                     var object = JSON.parse(recievedData);
-                
+
                     // Getting attributes
                     const title = object.title;
                     const description = object.description;
@@ -114,7 +115,7 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     var gigMessage = "Title - " + title + "\nDescription - " + description + "\nBounty - " + bounty + "\nTime - " + time + "\nIssued By - " + issuedBy + "\nCategory - " + category + "\nCompleted - " + completed;
                     message.content = gigMessage;
                     createGig(title, description, bounty, time, issuedBy, completed, category);
-                
+
                 } catch (err) {
                     console.log(err);
                     message.content = "Invalid JSON";
@@ -125,7 +126,7 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
             })
 
         });
-        
+
     }
 
 }
@@ -135,18 +136,18 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
 function checkIntroQueue(introChannels, numberOfMsgs) {
     for (var i = 0; i < introChannels.length; i++) {
         const reciever = client.channels.cache.get(introChannels[i]);
-    
+
         // const sender = client.channels.cache.get("1008046869030654032");
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
             console.log(`Received ${messages.size} messages`);
             messages.forEach(message => {
-                
+
                 // Parsing JSON
                 var recievedData = message.content;
                 try {
-                    
+
                     var object = JSON.parse(recievedData);
-                    
+
                     // Getting attributes
                     const nameOfDeveloper = object.name;
                     const emailOfDeveloper = object.email;
@@ -160,21 +161,21 @@ function checkIntroQueue(introChannels, numberOfMsgs) {
                     console.log(emailOfDeveloper);
                     console.log(languages);
                     console.log(links);
-                    
+
                     const newUser = CheckIfExistsQ(nameOfDeveloper, emailOfDeveloper, languages, links, associations);
-                    
-                    
+
+
                 } catch (err) {
                     console.log(err);
                     message.content = "Invalid JSON";
-                    
-                }    
+
+                }
             })
-            
+
         });
     }
-            
-    
+
+
 
 }
 
@@ -196,9 +197,9 @@ client.on("messageCreate", async(msg) => {
 
     if (channelName === 'intro' || channelName === 'listings') {
         // Method to fetch 1 message and send to our server/channel
-        getMessages(msg.channel.id, 1, channelName);    
+        getMessages(msg.channel.id, 1, channelName);
     }
-    
+
 
 });
 
