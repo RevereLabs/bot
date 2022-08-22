@@ -12,7 +12,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 async function getMessages(channelID, numberOfMsgs, channelName) {
 
     const reciever = client.channels.cache.get(channelID);
-    const sender = client.channels.cache.get("1008046869030654032");
+    const sender = client.channels.cache.get("1011267714800693348");
     if (channelName === 'intro') {
         reciever.messages.fetch({ limit: numberOfMsgs }).then(messages => {
             console.log(`Received ${messages.size} messages`);
