@@ -114,7 +114,7 @@ async function getMessages(channelID, numberOfMsgs, channelName) {
                     console.log(category);
                     var gigMessage = "Title - " + title + "\nDescription - " + description + "\nBounty - " + bounty + "\nTime - " + time + "\nIssued By - " + issuedBy + "\nCategory - " + category + "\nCompleted - " + completed;
                     message.content = gigMessage;
-                    createGig(title, description, bounty, time, issuedBy, completed, category);
+                    createGig(title, description, bounty, time, issuedBy, category);
 
                 } catch (err) {
                     console.log(err);
